@@ -19,6 +19,9 @@ public class Zombie {
 
 
     public Zombie(Integer x, Integer y, Long appearanceTime, Game myGame) {
+        if (appearanceTime < 0 || appearanceTime >100000000) {
+            throw new RuntimeException("Invalid appearance time:  0 <= Mi <= 100000000");
+        }
         Collection<Long> schedule = new ArrayList<Long>(1);
         schedule.add(appearanceTime);
 
@@ -63,11 +66,6 @@ public class Zombie {
                 this.status = VisibilityStatus.GONE;
             }
         }
-    }
-
-    public void smash() {
-        // OW...MY HEAD!
-        this.status = VisibilityStatus.SMASHED;
     }
 
     private boolean isCurrentTimeAfterAppearance(Long currentTime) {

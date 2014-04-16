@@ -9,6 +9,8 @@ public class Game {
     private static final Integer MOVE_DURATION = 1000;  // Should be pulled from some configuration
     private static final Integer CELLS_PER_MOVE = 1;
     private static final Integer SMASHER_RECHARGE_DURATION = 750;
+    private static final Integer UPPER_COORDINATE_LIMIT = 1000;
+    private static final Integer LOWER_COORDINATE_LIMIT = -1000;
 
     private Collection<Zombie> zombies;
 
@@ -78,10 +80,7 @@ public class Game {
     }
 
     /**
-     * Assuming the board is a cartesian coordinate system where the player starts at the origin and plays the
-     * game in Quadrant I (+, +).  So if the player move results in them moving into another quadrant,
-     * we treat it as the player trying to move off the board.  If the player tries to move off the board,
-     * we reset their position back to the previous spot.
+     * If the player tries to move off the board, we reset their position back to the previous spot.
      */
     private void movePlayerToNewSpot(Direction direction) {
         // Player chooses to simply stay still on their turn
@@ -98,7 +97,14 @@ public class Game {
     }
 
     private boolean didPlayerMoveOffTheBoard() {
-        return (playerLocation.getX() < 0 || playerLocation.getY() < 0);
+        boolean isXCoordinateValid = isCoordinateValid(playerLocation.getX());
+        boolean isYCoordinateValid = isCoordinateValid(playerLocation.getY());
+
+        return (isXCoordinateValid && isYCoordinateValid);
+    }
+
+    private boolean isCoordinateValid(Integer coordinate) {
+        return (LOWER_COORDINATE_LIMIT <= coordinate && coordinate <= UPPER_COORDINATE_LIMIT);
     }
 
     private void notifyZombieOfCurrentTime(Zombie zombie) {
@@ -113,7 +119,8 @@ public class Game {
     }
 
     private void smashZombie(Zombie zombie) {
-        zombie.smash();
         this.timeTillZapperIsReady = SMASHER_RECHARGE_DURATION;
+        this.zombiesKilled ++;
+        this.zombies.remove(zombie);
     }
 }
